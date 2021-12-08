@@ -57,7 +57,7 @@ def main():
     parser.add_argument('--model-type', '-m', choices=['mnist', 'cifar10', 'svhn'], default='cifar10',
                         help='model type or name of the dataset')
     parser.add_argument('--seed', '-s', type=int, default=SEED_DEFAULT, help='seed for random number generation')
-    parser.add_argument('--gpu', type=str, default='2', help='which gpus to execute code on')
+    parser.add_argument('--gpu', type=str, default='0', help='which gpus to execute code on')
     parser.add_argument('--batch-size', type=int, default=BATCH_SIZE_DEF, help='batch size of evaluation')
     parser.add_argument('--search-noise-stdev', '--sns', action='store_true', default=False,
                         help='use option to search for a suitable noise standard deviation')

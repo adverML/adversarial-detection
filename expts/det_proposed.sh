@@ -3,7 +3,7 @@ dm='proposed'
 
 #Test statistic
 #Options are: 'multinomial', 'binomial', 'trust', 'lid', 'distance'
-ts='multinomial'
+ts='binomial'
 
 #Scoring method
 #Options are: 'pvalue' and 'klpe'
