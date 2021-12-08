@@ -3,7 +3,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - appnope=0.1.0
   - attrs=19.3.0
   - backcall=0.1.0
   - bleach=3.1.0
@@ -42,7 +41,6 @@ dependencies:
   - libcxx=9.0.0
   - libedit=3.1.20181209
   - libffi=3.2.1
-  - libgfortran=3.0.1
   - libiconv=1.15
   - liblapack=3.8.0
   - libllvm8=8.0.1
@@ -109,4 +107,3 @@ dependencies:
   - pip:
     - pyqt5-sip==4.19.18
     - pyqtwebengine==5.12.1
-

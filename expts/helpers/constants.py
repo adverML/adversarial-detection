@@ -1,7 +1,7 @@
 import os
 import numpy
 
-ROOT = '/nobackup/varun/adversarial-detection/expts'
+ROOT = '/home/lorenzp/adversialml/src/src/submodules/adversarial-detection/expts'
 DATA_PATH = os.path.join(ROOT, 'data')
 NUMPY_DATA_PATH = os.path.join(ROOT, 'numpy_data')
 MODEL_PATH = os.path.join(ROOT, 'models')

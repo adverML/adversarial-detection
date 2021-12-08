@@ -182,7 +182,7 @@ def project_fixed_dimension(embeddings, labels, dim_proj, indices_sample, model_
 
 def main():
     parser = argparse.ArgumentParser(description='Arguments')
-    parser.add_argument('--model-type', '-m', choices=['mnist', 'cifar10', 'svhn'], default='mnist',
+    parser.add_argument('--model-type', '-m', choices=['mnist', 'cifar10', 'svhn'], default='cifar10',
                         help='model type or name of the dataset')
     parser.add_argument('--detection-method', '--dm', choices=DETECTION_METHODS, default='proposed',
                         help="Detection method to run. Choices are: {}".format(', '.join(DETECTION_METHODS)))
@@ -193,7 +193,7 @@ def main():
     parser.add_argument('--no-cuda', action='store_true', default=False, help='disables CUDA training')
     parser.add_argument('--seed', '-s', type=int, default=1, help='random seed (default: 1)')
     parser.add_argument('--n-jobs', type=int, default=8, help='number of parallel jobs to use for multiprocessing')
-    parser.add_argument('--gpu', type=str, default='2', help='gpus to execute code on')
+    parser.add_argument('--gpu', type=str, default='0', help='gpus to execute code on')
     parser.add_argument('--output-dir', '-o', type=str, default='', help='output directory path')
     args = parser.parse_args()
 
@@ -265,11 +265,11 @@ def main():
     # Get the feature embeddings from all the layers and the labels
     print("Calculating layer embeddings for the train data:")
     embeddings, labels, labels_pred, counts = extract_layer_embeddings(
-        model, device, train_loader, method=args.detection_method
+        model, device, train_loader, method=args.detection_method, num_samples=8000
     )
     print("\nCalculating layer embeddings for the test data:")
     _, labels_test, labels_pred_test, counts_test = extract_layer_embeddings(
-        model, device, test_loader, method=args.detection_method
+        model, device, test_loader, method=args.detection_method,  num_samples=2000
     )
     accu_test = np.sum(labels_test == labels_pred_test) / float(labels_test.shape[0])
     print("\nTest set accuracy = {:.4f}".format(accu_test))
