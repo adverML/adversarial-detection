@@ -15,12 +15,14 @@ pf='fisher'
 
 #Dataset
 #Options are: 'mnist', 'cifar10', 'svhn'
-dataset='cifar10'
+dataset='mnist'
+
+#Adversarial attack
+#Options are: 'CW', 'PGD', 'FGSM', 'Custom'
+attack='PGD'
 
 #Output directory
 output_dir='./outputs_rebel_fisher'
-
-
 
 #Number of CPU cores
 n_jobs=16
@@ -28,16 +30,24 @@ n_jobs=16
 #GPU ID
 gpu=0
 
-#Adversarial attack
-#Set to  'none' to evaluate on clean data
-attack='none'
-
 mdr='./layers_cifar10/models_dimension_reduction.pkl'
 
-python -u prediction_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr
+nf=2
 
-#Evaluate on CW attack with confidence = 0
-attack='PGD'
-index=0
+python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
 
-python -u prediction_main.py -m $dataset --dm $dm --index-adv $index --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr
+#Change the p-value fusion method to 'harmonic_mean'
+pf='harmonic_mean'
+
+#Output directory
+output_dir='./outputs_rebel_hmp'
+
+python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+
+#Change the scoring method to 'klpe'
+score='klpe'
+
+#Output directory
+output_dir='./outputs_rebel_klpe'
+
+python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf

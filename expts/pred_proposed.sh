@@ -34,10 +34,12 @@ attack='none'
 
 mdr='./layers_cifar10/models_dimension_reduction.pkl'
 
-python -u prediction_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr
+nf=2
+
+python -u prediction_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
 
 #Evaluate on CW attack with confidence = 0
 attack='PGD'
 index=0
 
-python -u prediction_main.py -m $dataset --dm $dm --index-adv $index --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr
+python -u prediction_main.py -m $dataset --dm $dm --index-adv $index --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
