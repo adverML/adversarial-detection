@@ -265,7 +265,7 @@ def main():
     # Get the feature embeddings from all the layers and the labels
     print("Calculating layer embeddings for the train data:")
     embeddings, labels, labels_pred, counts = extract_layer_embeddings(
-        model, device, train_loader, method=args.detection_method, num_samples=8000
+        model, device, train_loader, method=args.detection_method, num_samples=5000
     )
     print("\nCalculating layer embeddings for the test data:")
     _, labels_test, labels_pred_test, counts_test = extract_layer_embeddings(
