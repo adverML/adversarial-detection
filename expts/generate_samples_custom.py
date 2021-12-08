@@ -4,6 +4,7 @@ them to numpy files.
 
 Example usage:
 python generate_samples_custom.py -m mnist max-num-adver 1000 --gpu 3 --defense-method proposed --dist-metric cosine --n-jobs 16
+python generate_samples_custom.py -m cifar10 --max-num-adver 100 --gpu 0 --defense-method proposed --dist-metric cosine --n-jobs 16 --nf 2
 
 """
 from __future__ import absolute_import, division, print_function
@@ -95,7 +96,7 @@ def main():
     parser.add_argument('--max-num-adver', type=int, default=-1,
                         help='Maximum number of adversarial samples to generate. If set to the default of -1, it '
                              'attempts to generate adversarial samples for every test fold sample.')
-    parser.add_argument('--model-type', '-m', choices=['mnist', 'cifar10', 'svhn'], default='mnist',
+    parser.add_argument('--model-type', '-m', choices=['mnist', 'cifar10', 'svhn'], default='cifar10',
                         help='model type or name of the dataset')
     parser.add_argument('--output-dir', '-o', default='', help='directory path for saving the output and model files')
     parser.add_argument('--seed', '-s', type=int, default=SEED_DEFAULT, help='seed for random number generation')

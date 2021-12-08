@@ -31,7 +31,6 @@ n_jobs=16
 gpu=0
 
 mdr='./layers_cifar10/models_dimension_reduction.pkl'
-
 nf=2
 
 python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
