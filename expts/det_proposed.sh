@@ -15,7 +15,7 @@ pf='fisher'
 
 #Dataset
 #Options are: 'mnist', 'cifar10', 'svhn'
-dataset='mnist'
+dataset='cifar10'
 
 #Adversarial attack
 #Options are: 'CW', 'PGD', 'FGSM', 'Custom'
