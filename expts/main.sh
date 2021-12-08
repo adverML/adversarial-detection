@@ -27,4 +27,7 @@
 # python generate_samples.py --tb 100 --gpu 0 --nf 2
 
 
-python layers.py -b 256 -o "layers_cifar10" --n-jobs 8
+# python layers.py -b 256 -o "layers_cifar10" --n-jobs 4
+
+
+python detection_main.py -o "detection_cifar10" --nf 2

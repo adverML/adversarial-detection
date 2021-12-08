@@ -265,11 +265,11 @@ def main():
     # Get the feature embeddings from all the layers and the labels
     print("Calculating layer embeddings for the train data:")
     embeddings, labels, labels_pred, counts = extract_layer_embeddings(
-        model, device, train_loader, method=args.detection_method, num_samples=5000
+        model, device, train_loader, method=args.detection_method, num_samples=4000
     )
     print("\nCalculating layer embeddings for the test data:")
     _, labels_test, labels_pred_test, counts_test = extract_layer_embeddings(
-        model, device, test_loader, method=args.detection_method,  num_samples=2000
+        model, device, test_loader, method=args.detection_method,  num_samples=1500
     )
     accu_test = np.sum(labels_test == labels_pred_test) / float(labels_test.shape[0])
     print("\nTest set accuracy = {:.4f}".format(accu_test))
