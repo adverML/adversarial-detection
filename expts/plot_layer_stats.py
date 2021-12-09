@@ -481,7 +481,7 @@ def plot_test_stats_seperate_figures(args, test_stats_pred, test_stats_true):
 def parse_cli():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch-size', type=int, default=256, help='batch size of evaluation')
-    parser.add_argument('--model-type', '-m', choices=['mnist', 'cifar10', 'svhn'], default='mnist',
+    parser.add_argument('--model-type', '-m', choices=['mnist', 'cifar10', 'svhn'], default='cifar10',
                         help='model type or name of the dataset')
     parser.add_argument('--index-adv', type=int, default=0,
                         help='Index of the adversarial attack parameter to use. This indexes the sorted directories '
@@ -531,7 +531,7 @@ def parse_cli():
     parser.add_argument('--num-folds', '--nf', type=int, default=CROSS_VAL_SIZE,
                         help='number of cross-validation folds')
     parser.add_argument('--no-cuda', action='store_true', default=False, help='disables CUDA training')
-    parser.add_argument('--gpu', type=str, default='2', help='which gpus to execute code on')
+    parser.add_argument('--gpu', type=str, default='0', help='which gpus to execute code on')
     parser.add_argument('--n-jobs', type=int, default=8, help='number of parallel jobs to use for multiprocessing')
     parser.add_argument('--seed', '-s', type=int, default=SEED_DEFAULT, help='seed for random number generation')
     args = parser.parse_args()

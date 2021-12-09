@@ -19,10 +19,17 @@ dataset='cifar10'
 
 #Adversarial attack
 #Options are: 'CW', 'PGD', 'FGSM', 'Custom'
-attack='PGD'
+attack='FGSM'
+# attack='PGD'
+# attack='CW'
+
 
 #Output directory
-output_dir='./outputs_rebel_fisher'
+output_dir='./detection/FGSM/outputs_rebel_fisher'
+# output_dir='./detection/PGD/outputs_rebel_fisher'
+# output_dir='./detection/CW/outputs_rebel_fisher'
+
+
 
 #Number of CPU cores
 n_jobs=16
@@ -39,7 +46,10 @@ python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf -
 pf='harmonic_mean'
 
 #Output directory
-output_dir='./outputs_rebel_hmp'
+output_dir='./detection/FGSM/outputs_rebel_hmp'
+# output_dir='./detection/PGD/outputs_rebel_hmp'
+# output_dir='./detection/CW/outputs_rebel_hmp'
+
 
 python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
 
@@ -47,6 +57,9 @@ python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf -
 score='klpe'
 
 #Output directory
-output_dir='./outputs_rebel_klpe'
+output_dir='./detection/FGSM/outputs_rebel_klpe'
+# output_dir='./detection/PGD/outputs_rebel_klpe'
+# output_dir='./detection/CW/outputs_rebel_klpe'
+
 
 python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
