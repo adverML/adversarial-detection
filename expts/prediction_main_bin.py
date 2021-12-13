@@ -34,6 +34,8 @@ from helpers.dimension_reduction_methods import load_dimension_reduction_models
 from detectors.detector_proposed import DetectorLayerStatistics
 from detectors.detector_deep_knn import DeepKNN
 
+# import pdb
+
 # Target FPRs for setting thresholds of the detector (0.5%, 1%, 2%, 4%, 6%)
 FPRS_TARGET = [0.005, 0.01, 0.02, 0.04, 0.06]
 
@@ -282,6 +284,15 @@ def main():
                                               device=device)
         test_fold_loader = convert_to_loader(data_te, labels_te, dtype_x=torch.float, batch_size=args.batch_size,
                                              device=device)
+
+
+
+        clean_images = torch.load('/home/lorenzp/adversialml/src/src/data/attacks/run_1/cif10/wrn_28_10_10/fgsm/images')
+
+        pdb.set_trace()
+
+
+
         print("\nCalculating the layer embeddings and DNN predictions for the clean train data split:")
         layer_embeddings_tr, labels_pred_tr = helper_layer_embeddings(
             model, device, train_fold_loader, args.detection_method, labels_tr
