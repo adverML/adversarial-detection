@@ -163,6 +163,8 @@ def main():
     if n_neighbors <= 0:
         n_neighbors = None
 
+    print("nr neighbors: ", n_neighbors)    
+
     # Output directory
     if not args.output_dir:
         base_dir = get_output_path(args.model_type)
