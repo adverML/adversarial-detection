@@ -44,30 +44,30 @@ python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --pf $
 # python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
 
 
-#Change the p-value fusion method to 'harmonic_mean'
-pf='harmonic_mean'
+# #Change the p-value fusion method to 'harmonic_mean'
+# pf='harmonic_mean'
 
-#Output directory
-output_dir='./detection/FGSM/outputs_rebel_hmp'
-# output_dir='./detection/PGD/outputs_rebel_hmp'
-# output_dir='./detection/CW/outputs_rebel_hmp'
-
-
-python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
-# python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# #Output directory
+# output_dir='./detection/FGSM/outputs_rebel_hmp'
+# # output_dir='./detection/PGD/outputs_rebel_hmp'
+# # output_dir='./detection/CW/outputs_rebel_hmp'
 
 
-#Change the scoring method to 'klpe'
-score='klpe'
-
-#Output directory
-output_dir='./detection/FGSM/outputs_rebel_klpe'
-# output_dir='./detection/PGD/outputs_rebel_klpe'
-# output_dir='./detection/CW/outputs_rebel_klpe'
+# python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# # python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
 
 
-python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
-# python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# #Change the scoring method to 'klpe'
+# score='klpe'
+
+# #Output directory
+# output_dir='./detection/FGSM/outputs_rebel_klpe'
+# # output_dir='./detection/PGD/outputs_rebel_klpe'
+# # output_dir='./detection/CW/outputs_rebel_klpe'
+
+
+# python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# # python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
 
 
 

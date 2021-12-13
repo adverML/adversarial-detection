@@ -352,6 +352,8 @@ def main():
         # Get the range of values in the data array
         bounds = get_data_bounds(np.concatenate([data_tr, data_te], axis=0))
 
+        print("bounds: ", bounds)
+
         print("\nCalculating the layer embeddings and DNN predictions for the clean train data split:")
         layer_embeddings_tr, labels_pred_tr = helper_layer_embeddings(
             model, device, train_fold_loader, args.detection_method, labels_tr
