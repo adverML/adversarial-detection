@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 # conda create -n detect python=3.6 
 # conda env update --file conda_pynndescent.yml

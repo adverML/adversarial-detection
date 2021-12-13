@@ -34,7 +34,7 @@ from helpers.dimension_reduction_methods import load_dimension_reduction_models
 from detectors.detector_proposed import DetectorLayerStatistics
 from detectors.detector_deep_knn import DeepKNN
 
-# import pdb
+import pdb
 
 # Target FPRs for setting thresholds of the detector (0.5%, 1%, 2%, 4%, 6%)
 FPRS_TARGET = [0.005, 0.01, 0.02, 0.04, 0.06]
@@ -165,8 +165,6 @@ def main():
     if n_neighbors <= 0:
         n_neighbors = None
 
-    print("nr neighbors: ", n_neighbors)    
-
     # Output directory
     if not args.output_dir:
         base_dir = get_output_path(args.model_type)
@@ -285,13 +283,8 @@ def main():
         test_fold_loader = convert_to_loader(data_te, labels_te, dtype_x=torch.float, batch_size=args.batch_size,
                                              device=device)
 
-
-
-        clean_images = torch.load('/home/lorenzp/adversialml/src/src/data/attacks/run_1/cif10/wrn_28_10_10/fgsm/images')
-
+        # clean_images = torch.load('/home/lorenzp/adversialml/src/src/data/attacks/run_1/cif10/wrn_28_10_10/cw/images')
         pdb.set_trace()
-
-
 
         print("\nCalculating the layer embeddings and DNN predictions for the clean train data split:")
         layer_embeddings_tr, labels_pred_tr = helper_layer_embeddings(
@@ -311,12 +304,11 @@ def main():
             )
             num_adv_tr = labels_tr_adv.shape[0]
             num_adv_te = labels_te_adv.shape[0]
+
             print("\nTrain fold: number of clean samples = {:d}, number of adversarial samples = {:d}, % of "
-                  "adversarial samples = {:.4f}".format(num_clean_tr, num_adv_tr,
-                                                        (100. * num_adv_tr) / (num_clean_tr + num_adv_tr)))
+                  "adversarial samples = {:.4f}".format(num_clean_tr, num_adv_tr, (100. * num_adv_tr) / (num_clean_tr + num_adv_tr)))
             print("Test fold: number of clean samples = {:d}, number of adversarial samples = {:d}, % of adversarial "
-                  "samples = {:.4f}".format(num_clean_te, num_adv_te,
-                                            (100. * num_adv_te) / (num_clean_te + num_adv_te)))
+                  "samples = {:.4f}".format(num_clean_te, num_adv_te, (100. * num_adv_te) / (num_clean_te + num_adv_te)))
             # Adversarial data loader for the test fold
             adv_test_fold_loader = convert_to_loader(data_te_adv, labels_te_adv, dtype_x=torch.float,
                                                      batch_size=args.batch_size, device=device)
@@ -332,6 +324,8 @@ def main():
             # Class predictions of the DNN on adversarial samples from this test fold
             labels_pred_dnn_folds.append(labels_pred_te_adv)
             num_expec = num_adv_te
+
+            pdb.set_trace()
         else:
             print("\nTrain fold: number of clean samples = {:d}".format(num_clean_tr))
             print("Test fold: number of clean samples = {:d}".format(num_clean_te))
@@ -340,11 +334,13 @@ def main():
             # Class predictions of the DNN on clean samples from this test fold
             labels_pred_dnn_folds.append(labels_pred_te)
             num_expec = num_clean_te
+            pdb.set_trace()
 
         # Detection methods
         if args.detection_method == 'proposed':
             nl = len(layer_embeddings_tr)
             st_ind = 0
+            pdb.set_trace()
             if args.use_deep_layers:
                 if args.num_layers > nl:
                     print("WARNING: number of layers specified using the option '--num-layers' exceeds the number "
@@ -352,8 +348,14 @@ def main():
                     st_ind = 0
                 else:
                     st_ind = nl - args.num_layers
+                    print("st_ind")
                     print("Using only the last {:d} layer embeddings from the {:d} layers for the proposed method.".
                           format(args.num_layers, nl))
+
+            print("st_ind", st_ind)
+
+            print(args)
+            pdb.set_trace()
 
             mod_dr = None if (model_dim_reduc is None) else model_dim_reduc[st_ind:]
             det_model = DetectorLayerStatistics(
@@ -370,10 +372,12 @@ def main():
                 seed_rng=args.seed
             )
             # Fit the detector on clean data from the training fold
+            print("test_statistic: ", args.test_statistic)
             if args.combine_classes and (args.test_statistic == 'multinomial'):
-                _ = det_model.fit(layer_embeddings_tr[st_ind:], labels_tr, labels_pred_tr,
-                                  combine_low_proba_classes=True)
+                pdb.set_trace()
+                _ = det_model.fit(layer_embeddings_tr[st_ind:], labels_tr, labels_pred_tr, combine_low_proba_classes=True)
             else:
+                pdb.set_trace()
                 _ = det_model.fit(layer_embeddings_tr[st_ind:], labels_tr, labels_pred_tr)
 
             # Find the score thresholds corresponding to the target FPRs using the scores from the clean train
@@ -382,6 +386,10 @@ def main():
                 layer_embeddings_tr[st_ind:], labels_pred_tr, test_layer_pairs=True, is_train=True
             )
             thresholds = find_score_thresholds(scores_detec_train, FPRS_TARGET)
+
+            print("thresholds: ", thresholds)
+            print("evaluate_on_clean", evaluate_on_clean)
+
             if evaluate_on_clean:
                 # Scores and class predictions on clean data from the test fold
                 scores_detec, labels_pred_detec = det_model.score(
@@ -394,6 +402,9 @@ def main():
                     layer_embeddings_te_adv[st_ind:], labels_pred_te_adv,
                     return_corrected_predictions=True, test_layer_pairs=True
                 )
+            
+            pdb.set_trace()
+
 
         elif args.detection_method == 'dknn':
             det_model = DeepKNN(

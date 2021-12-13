@@ -18,65 +18,15 @@ pf='fisher'
 dataset='cifar10'
 
 #Adversarial attack
-# #Options are: 'CW', 'PGD', 'FGSM', 'Custom'
-# attack='FGSM'
-# # attack='PGD'
-# # attack='CW'
-
-
-# #Output directory
-# output_dir='./detection/FGSM/outputs_rebel_fisher'
-# # output_dir='./detection/PGD/outputs_rebel_fisher'
-# # output_dir='./detection/CW/outputs_rebel_fisher'
-
-
-
-# #Number of CPU cores
-# n_jobs=16
-
-# #GPU ID
-# gpu=0
-
-# mdr='./layers_cifar10/models_dimension_reduction.pkl'
-# nf=2
-
-# python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
-
-# #Change the p-value fusion method to 'harmonic_mean'
-# pf='harmonic_mean'
-
-# #Output directory
-# output_dir='./detection/FGSM/outputs_rebel_hmp'
-# # output_dir='./detection/PGD/outputs_rebel_hmp'
-# # output_dir='./detection/CW/outputs_rebel_hmp'
-
-
-# python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
-
-# #Change the scoring method to 'klpe'
-# score='klpe'
-
-# #Output directory
-# output_dir='./detection/FGSM/outputs_rebel_klpe'
-# # output_dir='./detection/PGD/outputs_rebel_klpe'
-# # output_dir='./detection/CW/outputs_rebel_klpe'
-
-
-# python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
-
-
-
-########################################################################
-#Adversarial attack
 #Options are: 'CW', 'PGD', 'FGSM', 'Custom'
-# attack='FGSM'
-attack='PGD'
+attack='FGSM'
+# attack='PGD'
 # attack='CW'
 
 
 #Output directory
-# output_dir='./detection/FGSM/outputs_rebel_fisher'
-output_dir='./detection/PGD/outputs_rebel_fisher'
+output_dir='./detection/FGSM/outputs_rebel_fisher'
+# output_dir='./detection/PGD/outputs_rebel_fisher'
 # output_dir='./detection/CW/outputs_rebel_fisher'
 
 
@@ -90,77 +40,135 @@ gpu=0
 mdr='./layers_cifar10/models_dimension_reduction.pkl'
 nf=2
 
-python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+
 
 #Change the p-value fusion method to 'harmonic_mean'
 pf='harmonic_mean'
 
 #Output directory
-# output_dir='./detection/FGSM/outputs_rebel_hmp'
-output_dir='./detection/PGD/outputs_rebel_hmp'
+output_dir='./detection/FGSM/outputs_rebel_hmp'
+# output_dir='./detection/PGD/outputs_rebel_hmp'
 # output_dir='./detection/CW/outputs_rebel_hmp'
 
 
-python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+
 
 #Change the scoring method to 'klpe'
 score='klpe'
 
 #Output directory
-# output_dir='./detection/FGSM/outputs_rebel_klpe'
-output_dir='./detection/PGD/outputs_rebel_klpe'
+output_dir='./detection/FGSM/outputs_rebel_klpe'
+# output_dir='./detection/PGD/outputs_rebel_klpe'
 # output_dir='./detection/CW/outputs_rebel_klpe'
 
 
-python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
 
 
 
 
-########################################################################
-#Adversarial attack
-#Options are: 'CW', 'PGD', 'FGSM', 'Custom'
-# attack='FGSM'
+# ########################################################################
+# #Adversarial attack
+# #Options are: 'CW', 'PGD', 'FGSM', 'Custom'
+# # attack='FGSM'
 # attack='PGD'
-attack='CW'
+# # attack='CW'
 
 
-#Output directory
-# output_dir='./detection/FGSM/outputs_rebel_fisher'
+# #Output directory
+# # output_dir='./detection/FGSM/outputs_rebel_fisher'
 # output_dir='./detection/PGD/outputs_rebel_fisher'
-output_dir='./detection/CW/outputs_rebel_fisher'
+# # output_dir='./detection/CW/outputs_rebel_fisher'
 
 
 
-#Number of CPU cores
-n_jobs=16
+# #Number of CPU cores
+# n_jobs=16
 
-#GPU ID
-gpu=0
+# #GPU ID
+# gpu=0
 
-mdr='./layers_cifar10/models_dimension_reduction.pkl'
-nf=2
+# mdr='./layers_cifar10/models_dimension_reduction.pkl'
+# nf=2
 
-python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# # python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
 
-#Change the p-value fusion method to 'harmonic_mean'
-pf='harmonic_mean'
 
-#Output directory
-# output_dir='./detection/FGSM/outputs_rebel_hmp'
+# #Change the p-value fusion method to 'harmonic_mean'
+# pf='harmonic_mean'
+
+# #Output directory
+# # output_dir='./detection/FGSM/outputs_rebel_hmp'
 # output_dir='./detection/PGD/outputs_rebel_hmp'
-output_dir='./detection/CW/outputs_rebel_hmp'
+# # output_dir='./detection/CW/outputs_rebel_hmp'
 
+# # python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
 
-python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# #Change the scoring method to 'klpe'
+# score='klpe'
 
-#Change the scoring method to 'klpe'
-score='klpe'
-
-#Output directory
-# output_dir='./detection/FGSM/outputs_rebel_klpe'
+# #Output directory
+# # output_dir='./detection/FGSM/outputs_rebel_klpe'
 # output_dir='./detection/PGD/outputs_rebel_klpe'
-output_dir='./detection/CW/outputs_rebel_klpe'
+# # output_dir='./detection/CW/outputs_rebel_klpe'
 
 
-python -u detection_main.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+# python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+
+
+
+
+# ########################################################################
+# #Adversarial attack
+# #Options are: 'CW', 'PGD', 'FGSM', 'Custom'
+# # attack='FGSM'
+# # attack='PGD'
+# attack='CW'
+
+
+# #Output directory
+# # output_dir='./detection/FGSM/outputs_rebel_fisher'
+# # output_dir='./detection/PGD/outputs_rebel_fisher'
+# output_dir='./detection/CW/outputs_rebel_fisher'
+
+
+
+# #Number of CPU cores
+# n_jobs=16
+
+# #GPU ID
+# gpu=0
+
+# mdr='./layers_cifar10/models_dimension_reduction.pkl'
+# nf=2
+
+# python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+
+# #Change the p-value fusion method to 'harmonic_mean'
+# pf='harmonic_mean'
+
+# #Output directory
+# # output_dir='./detection/FGSM/outputs_rebel_hmp'
+# # output_dir='./detection/PGD/outputs_rebel_hmp'
+# output_dir='./detection/CW/outputs_rebel_hmp'
+
+
+# python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --pf $pf --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf
+
+# #Change the scoring method to 'klpe'
+# score='klpe'
+
+# #Output directory
+# # output_dir='./detection/FGSM/outputs_rebel_klpe'
+# # output_dir='./detection/PGD/outputs_rebel_klpe'
+# output_dir='./detection/CW/outputs_rebel_klpe'
+
+
+# python -u detection_main_bin.py -m $dataset --dm $dm --ts $ts --st $score --adv-attack $attack --gpu $gpu --n-jobs $n_jobs -o $output_dir --mdr $mdr --nf $nf

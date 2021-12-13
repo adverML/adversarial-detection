@@ -118,6 +118,8 @@ class TestStatistic(ABC):
         else:
             self.labels_unique = labels_unique
 
+        print("labels_unique:", labels_unique)
+
         self.n_classes = len(self.labels_unique)
         # Mapping from the original labels to the set {0, 1, . . .,self.n_classes - 1}. This is needed by the label
         # count function
