@@ -24,7 +24,15 @@
 # conda install numpy==1.16.2 scipy==1.2.1 joblib==0.14.0 scikit-learn==0.20.3 numba==0.46.0 llvmlite==0.30.0 pynndescent==0.3.3  matplotlib==3.0.3
 
 # cd expts
-python generate_samples.py --tb 100 --gpu 0 --nf 2 --aa FGSM
-#  python generate_samples.py --tb 100 --gpu 0 --nf 2 --aa CW -p 2
-# python generate_noisy_data.py --tb 100 --gpu 0 --nf 2   --search-noise-stdev
+# python generate_samples.py --tb 1000 --gpu 0 --nf 2 --aa FGSM
+#  python generate_samples.py --tb 1000 --gpu 0 --nf 2 --aa CW -p 2
+# python generate_noisy_data.py --tb 1000 --gpu 0 --nf 2   --search-noise-stdev
 # python layers.py -b 256 -o "layers_cifar10" --n-jobs 4
+
+
+# python generate_samples.py --tb 1000 --gpu 0  --nf 3 --aa FGSM
+python generate_samples.py --tb 1000 --gpu 0 --epsilon 0.03 --max-epsilon 0.03 --nf 3 --aa FGSM
+
+# python generate_samples.py --tb 1000 --gpu 0 --max-epsilon 0.3 --nf 3 --aa PGD
+# python generate_samples.py --tb 1000 --gpu 0 --nf 3 --max-epsilon 0.3 --aa CW  -p 2
+

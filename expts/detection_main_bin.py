@@ -342,6 +342,9 @@ def main():
         data_tr, labels_tr, data_te, labels_te = load_numpy_data(numpy_save_path)
         num_clean_tr = labels_tr.shape[0]
         num_clean_te = labels_te.shape[0]
+
+        print(labels_tr)
+
         # Data loader for the train fold
         train_fold_loader = convert_to_loader(data_tr, labels_tr, dtype_x=torch.float, batch_size=args.batch_size,
                                               device=device)

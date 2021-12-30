@@ -13,6 +13,8 @@ from nets.mnist import *
 from nets.cifar10 import *
 from nets.svhn import *
 from nets.resnet import *
+from nets.wideresidual import WideResNet, WideBasic
+
 from helpers.constants import (
     ROOT,
     SEED_DEFAULT,
@@ -31,6 +33,16 @@ from helpers.utils import (
     get_samples_as_ndarray
 )
 from helpers.attacks import foolbox_attack
+
+
+def create_new_state_dict(checkpoint, keyword='net'):
+
+    new_state_dict = OrderedDict()
+    for k, v in checkpoint[keyword].items():
+        name = k[7:] # remove `module.`
+        new_state_dict[name] = v
+
+    return new_state_dict
 
 
 def main():
@@ -56,8 +68,7 @@ def main():
     parser.add_argument('--max-iterations', type=int, default=1000, help='max num. of iterations')
     parser.add_argument('--iterations', type=int, default=40, help='num. of iterations')
     parser.add_argument('--max-epsilon', type=float, default=1., help='max. value of epsilon')
-    parser.add_argument('--num-folds', '--nf', type=int, default=CROSS_VAL_SIZE,
-                        help='number of cross-validation folds')
+    parser.add_argument('--num-folds', '--nf', type=int, default=CROSS_VAL_SIZE, help='number of cross-validation folds')
     args = parser.parse_args()
 
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
@@ -100,6 +111,15 @@ def main():
         num_classes = 10
         model = ResNet34().to(device)
         model = load_model_checkpoint(model, args.model_type)
+
+        # depth = 28
+        # widen_factor = 10
+        # model = WideResNet(num_classes=num_classes, block=WideBasic, depth=depth, widen_factor=widen_factor, preprocessing={})
+        # CIF10_CKPT     = '../../checkpoint/wideresnet_2810/wide_resnet_ckpt.pth'
+        # CIF10_CKPT     = '/home/lorenzp/adversialml/src/src/checkpoint/wideresnet_2810/wide_resnet_ckpt.pth'
+        # ckpt = torch.jit.load(CIF10_CKPT)
+        # new_state_dict = create_new_state_dict(ckpt)
+        # model.load_state_dict(new_state_dict).to(device)
 
     elif args.model_type == 'svhn':
         transform = transforms.Compose(
@@ -203,7 +223,7 @@ def main():
                 os.makedirs(adv_path)
 
             #use dataloader to create adv. examples; adv_inputs is an ndarray
-            adv_inputs, adv_labels, clean_inputs, clean_labels = foolbox_attack(
+            adv_inputs, adv_labels, clean_inputs, clean_labels, asr_te = foolbox_attack(
                	    model,
                	    device, 
                	    test_fold_loader,
@@ -223,15 +243,22 @@ def main():
                	    max_epsilon=max_epsilon
             )
         
+            log_file = open(adv_path + os.sep + 'log.txt', "a")
+            print("Test: ", asr_te)
+            log_file.write("eps: {}, max_eps: {}\n".format(epsilon, max_epsilon) )
+            log_file.write("Test: attack success rate: {}\n".format(asr_te) )
+
             #save test fold's adv. examples
+            # import pdb; pdb.set_trace()
             np.save(os.path.join(adv_path, 'data_te_adv.npy'), adv_inputs)
             np.save(os.path.join(adv_path, 'labels_te_adv.npy'), adv_labels)
             np.save(os.path.join(adv_path, 'data_te_clean.npy'), clean_inputs)
             np.save(os.path.join(adv_path, 'labels_te_clean.npy'), clean_labels)
             print("saved adv. examples generated from the test data for fold:", i)
 
+
             #use dataloader to create adv. examples; adv_inputs is an ndarray
-            adv_inputs, adv_labels, clean_inputs, clean_labels = foolbox_attack(
+            adv_inputs, adv_labels, clean_inputs, clean_labels, asr_tr = foolbox_attack(
                	    model,
                	    device, 
                	    train_fold_loader,
@@ -250,7 +277,8 @@ def main():
                	    iterations=iterations,
                	    max_epsilon=max_epsilon
             )
-        
+
+            # import pdb; pdb.set_trace()
             #save train_fold's adv. examples
             np.save(os.path.join(adv_path, 'data_tr_adv.npy'), adv_inputs)
             np.save(os.path.join(adv_path, 'labels_tr_adv.npy'), adv_labels)
@@ -258,6 +286,10 @@ def main():
             np.save(os.path.join(adv_path, 'labels_tr_clean.npy'), clean_labels)
             print("saved adv. examples generated from the train data for fold:", i)
         
+            print("ASR_tr: ", asr_tr)
+            log_file.write("Train: attack success rate: {}\n".format(asr_tr))
+            log_file.write("ASR: attack success rate: {}\n".format( np.mean( (asr_te, asr_tr) ) ) )
+
         else:
             print("generated original data split for fold : ", i)
 

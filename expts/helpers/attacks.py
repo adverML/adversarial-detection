@@ -49,6 +49,9 @@ def foolbox_attack_helper(attack_model, device, data_loader, loader_type, loader
     targets_clean = np.array([])
     init_batch = True
     n_samples_tot = 0
+
+    asr = []
+
     for batch_idx, (data, target) in enumerate(data_loader):
         data, target = data.to(device), target.to(device)
         data_numpy = data.data.cpu().numpy()
@@ -126,6 +129,7 @@ def foolbox_attack_helper(attack_model, device, data_loader, loader_type, loader
 
         #if the labels of adv. examples is the same as those of the src. labels, then the mismatch = 0
         mismatch = np.mean(adversarial_classes != target_numpy_valid)
+        asr.append(mismatch)
         print("label mismatch b/w clean and adversarials:", mismatch)   # should be close to 1 ideally
         #write to log
         if mismatch < 0.5:
@@ -152,11 +156,10 @@ def foolbox_attack_helper(attack_model, device, data_loader, loader_type, loader
 
         print("Finished processing batch id:", batch_idx)
 
-    print("Generated {:d} adversarial samples from a total of {:d} clean samples.".format(targets_adver.shape[0],
-                                                                                          n_samples_tot))
+    print("Generated {:d} adversarial samples from a total of {:d} clean samples.".format(targets_adver.shape[0], n_samples_tot))
     assert (data_adver.shape[0] == targets_adver.shape[0] == data_clean.shape[0] == targets_clean.shape[0]), \
         "Number of samples (rows) are not equal in the returned data and label arrays."
-    return data_adver, targets_adver.ravel(), data_clean, targets_clean.ravel()
+    return data_adver, targets_adver.ravel(), data_clean, targets_clean.ravel(), targets_adver.shape[0] / n_samples_tot
 
 
 def foolbox_attack(model, device, loader, loader_type, loader_batch_size, bounds, num_classes=10, dataset='cifar10',
@@ -192,7 +195,7 @@ def foolbox_attack(model, device, loader, loader_type, loader_batch_size, bounds
     else:
         raise ValueError("'{}' is not a supported adversarial attack".format(adv_attack))
 
-    data_adver, labels_adver, data_clean, labels_clean = foolbox_attack_helper(
+    data_adver, labels_adver, data_clean, labels_clean, asr = foolbox_attack_helper(
         attack_model,
         device,
         loader,
@@ -209,4 +212,4 @@ def foolbox_attack(model, device, loader, loader_type, loader_batch_size, bounds
         iterations=iterations,
         max_epsilon=max_epsilon
     )
-    return data_adver, labels_adver, data_clean, labels_clean
+    return data_adver, labels_adver, data_clean, labels_clean, asr
