@@ -276,10 +276,8 @@ def main():
         num_clean_tr = labels_tr.shape[0]
         num_clean_te = labels_te.shape[0]
         # Data loader for the train and test fold
-        train_fold_loader = convert_to_loader(data_tr, labels_tr, dtype_x=torch.float, batch_size=args.batch_size,
-                                              device=device)
-        test_fold_loader = convert_to_loader(data_te, labels_te, dtype_x=torch.float, batch_size=args.batch_size,
-                                             device=device)
+        train_fold_loader = convert_to_loader(data_tr, labels_tr, dtype_x=torch.float, batch_size=args.batch_size, device=device)
+        test_fold_loader = convert_to_loader(data_te, labels_te, dtype_x=torch.float, batch_size=args.batch_size, device=device)
         print("\nCalculating the layer embeddings and DNN predictions for the clean train data split:")
         layer_embeddings_tr, labels_pred_tr = helper_layer_embeddings(
             model, device, train_fold_loader, args.detection_method, labels_tr
@@ -302,10 +300,9 @@ def main():
                   "adversarial samples = {:.4f}".format(num_clean_tr, num_adv_tr,
                                                         (100. * num_adv_tr) / (num_clean_tr + num_adv_tr)))
             print("Test fold: number of clean samples = {:d}, number of adversarial samples = {:d}, % of adversarial "
-                  "samples = {:.4f}".format(num_clean_te, num_adv_te,
-                                            (100. * num_adv_te) / (num_clean_te + num_adv_te)))
+                  "samples = {:.4f}".format(num_clean_te, num_adv_te, (100. * num_adv_te) / (num_clean_te + num_adv_te)))
             # Adversarial data loader for the test fold
-            adv_test_fold_loader = convert_to_loader(data_te_adv, labels_te_adv, dtype_x=torch.float,
+            adv_test_fold_loader = convert_to_loader(data_te_adv, labels_te_adv, dtype_x=torch.float, 
                                                      batch_size=args.batch_size, device=device)
             print("\nCalculating the layer embeddings and DNN predictions for the adversarial test data split:")
             layer_embeddings_te_adv, labels_pred_te_adv = helper_layer_embeddings(
@@ -358,8 +355,7 @@ def main():
             )
             # Fit the detector on clean data from the training fold
             if args.combine_classes and (args.test_statistic == 'multinomial'):
-                _ = det_model.fit(layer_embeddings_tr[st_ind:], labels_tr, labels_pred_tr,
-                                  combine_low_proba_classes=True)
+                _ = det_model.fit(layer_embeddings_tr[st_ind:], labels_tr, labels_pred_tr, combine_low_proba_classes=True)
             else:
                 _ = det_model.fit(layer_embeddings_tr[st_ind:], labels_tr, labels_pred_tr)
 
@@ -413,6 +409,7 @@ def main():
                 "fold = {:d}".format(num_expec, args.detection_method, i + 1)
             )
 
+        import pdb; pdb.set_trace()
         scores_detec_folds.append(scores_detec)
         labels_pred_detec_folds.append(labels_pred_detec)
         thresholds_folds.append(thresholds)

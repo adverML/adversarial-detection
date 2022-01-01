@@ -2,6 +2,7 @@
 import numpy as np
 import torch
 import os
+import pdb
 import sys
 import pickle
 import copy
@@ -745,6 +746,8 @@ def metrics_detection(scores, labels, pos_label=1, max_fpr=FPR_MAX_PAUC, verbose
         if verbose:
             print("{:.6f}, {:.6f}".format(tpr[i], fpr[i]))
 
+    import pdb; pdb.set_trace()
+
     return au_roc, au_roc_partial, avg_prec, tpr, fpr
 
 
@@ -772,14 +775,13 @@ def metrics_varying_positive_class_proportion(scores, labels, pos_label=1, num_p
     :param num_prop: number of positive proportion values to evaluate.
     :param num_random_samples: number of random samples to use for estimating the median and confidence interval.
     :param seed: seed for the random number generator.
-    :param output_file: (optional) path to an output file where the metrics dict is written to using the
-                        Pickle protocol.
-    :param max_pos_proportion: Maximum proportion of positive samples to include in the plots. Should be a float
-                               value between 0 and 1.
+    :param output_file: (optional) path to an output file where the metrics dict is written to using the Pickle protocol.
+    :param max_pos_proportion: Maximum proportion of positive samples to include in the plots. Should be a float value between 0 and 1.
     :param log_scale: Set to True to use logarithmically spaced positive proportion values.
 
     :return: a dict with the proportion of positive samples and all the performance metrics.
     """
+
     np.random.seed(seed)
     n_folds = len(scores)
     n_samp = []
@@ -788,17 +790,106 @@ def metrics_varying_positive_class_proportion(scores, labels, pos_label=1, num_p
     scores_neg = []
     labels_neg = []
     for i in range(n_folds):
+        head, tail = os.path.split(output_file)
+        log_file_path = os.path.join(head, str(i) + '_log.txt')
+
+        log_file = open(log_file_path, "a")
+        y_hat = scores[i].copy()
+        # y_hat[y_hat_pr > 0] = 1
+        # y_hat[y_hat_pr <= 0] = 0
+
         n_samp.append(float(labels[i].shape[0]))
         # index of positive labels
         mask = (labels[i] == pos_label)
         temp = np.where(mask)[0]
+        y_hat[temp] = 1
         ind_pos.append(temp)
         n_pos_max.append(temp.shape[0])
         # index of negative labels
         temp = np.where(~mask)[0]
+        y_hat[temp] = 0
         scores_neg.append(scores[i][temp])
         labels_neg.append(labels[i][temp])
+    
+        y_hat_pr = scores[i].copy()
+        y_test = labels[i].copy()
 
+        y_hat[y_hat_pr >= 0] = 1
+        y_hat[y_hat_pr < 0] = 0
+
+        # benign_rate = 0
+        # benign_guesses = 0
+        # ad_guesses = 0
+        # ad_rate = 0
+        # for score in range(len(scores[i])):
+        #     if y_hat[score] == 0:
+        #         benign_guesses += 1
+        #         if y_test[score] == 0:
+        #             benign_rate += 1
+        #     else:
+        #         ad_guesses += 1
+        #         if y_test[score] == 1:
+        #             ad_rate += 1
+
+
+        # acc = (benign_rate+ad_rate)/len(y_hat)        
+        # TP = 2*ad_rate/len(y_hat)
+        # TN = 2*benign_rate/len(y_hat)
+
+        # precision = ad_rate/ad_guesses
+
+        # TPR = 2 * ad_rate / len(y_hat)
+        # recall = round(100*TPR, 2)
+
+        # prec = precision 
+        # rec = TPR
+
+        from sklearn.metrics import confusion_matrix
+        tn, fp, fn, tp = confusion_matrix(y_test, y_hat, labels=[0, 1]).ravel()
+
+        acc = (tp + tn) / (tp + tn + fp + fn)
+        precision = tp / (tp + fp)
+        recall = tp / (tp + fn)
+        tpr = tp / (tp + fn)
+        tnr = tn / (tn + fp)
+
+        log_file.write(">--------------------------------------------------------\n")
+        log_file.write("nfold:" + str(i) + "\n")
+        log_file.write(tail + "\n")
+
+
+        auc = round(100*roc_auc_score(y_test, y_hat), 2)
+        acc = round(100*acc, 2)
+        pre = round(100*precision, 2)
+        tpr = round(100*tpr, 2)
+        tnr = round(100*tnr, 2)
+
+
+        f1  = round((2 * (precision*recall) / (precision+recall))*100, 2)
+        fnr = round(100 - tpr, 2)
+
+        # auc = round(100*roc_auc_score(y_test, y_hat), 2)
+        # acc = round(100*acc, 2)
+        # pre = round(100*precision, 2)
+        # tpr = round(100*TPR, 2)
+        # f1  = round((2 * (prec*rec) / (prec+rec))*100, 2)
+        # fnr = round(100 - tpr, 2)
+    
+        log_file.write('F1-Measure: ' + str(f1) + '\n')
+        log_file.write('PREC: ' + str(pre)  + '\n')
+        log_file.write('ACC: '  + str(acc)  + '\n')
+        log_file.write('AUC: '  + str(auc)  + '\n')
+        log_file.write('TNR: '  + str(tnr)  + '\n') # True negative rate/normal detetcion rate/selectivity is 
+        log_file.write('TPR: '  + str(tpr)  + '\n') # True positive rate/adversarial detetcion rate/recall/sensitivity is 
+        log_file.write('FNR: '  + str(fnr)  + '\n')
+        log_file.write('RES:, AUC, ACC, PRE, TPR, F1, FNR'  + '\n')
+        log_file.write('RES:,' + str(auc) + ',' + str(acc) + ',' + str(pre) + ',' + str(tpr) + ',' + str(f1) + ',' + str(fnr)  + '\n')
+        log_file.write('<==========================================================================' + '\n') 
+        log_file.close()
+        # pdb.set_trace()
+
+
+    
     # Minimum proportion of positive samples. Ensuring that there are at least 5 positive samples
     p_min = max([max(5., np.ceil(0.005 * n_samp[i])) / n_samp[i] for i in range(n_folds)])
     # Maximum proportion of positive samples considering all the folds
@@ -921,6 +1012,8 @@ def metrics_varying_positive_class_proportion(scores, labels, pos_label=1, num_p
         print("TPR\tFPR_target\tFPR_actual\tTPR_scaled")
         for a, b, c in zip(ret1[1], FPR_THRESH, ret2[1]):
             print("{:.6f}\t{:.6f}\t{:.6f}\t{:.6f}".format(a, b, c, a / max(1, c / b)))
+
+    pdb.set_trace()
 
     # Save the results to a pickle file if required
     if output_file:
@@ -1277,6 +1370,8 @@ def plot_performance_comparison(results_dict, output_dir, x_axis, place_legend_o
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
 
+
+
     if x_axis == 'proportion':
         x_label = 'Proportion of {} samples (%)'.format(pos_label)
         s = 100.
@@ -1286,6 +1381,7 @@ def plot_performance_comparison(results_dict, output_dir, x_axis, place_legend_o
     else:
         raise ValueError("Invalid value '{}' for 'x_axis'".format(x_axis))
 
+    pdb.set_trace()
     methods = sorted(results_dict.keys())
     # AUC plots
     plot_dict = dict()
@@ -1323,6 +1419,7 @@ def plot_performance_comparison(results_dict, output_dir, x_axis, place_legend_o
         y_med = np.array(d['avg_prec']['median'])
         y_low = np.array(d['avg_prec']['CI_lower'])
         y_up = np.array(d['avg_prec']['CI_upper'])
+        pdb.set_trace()
         plot_dict[m] = {
             'x_vals': s * d[x_axis],
             'y_vals': y_med,
@@ -1339,6 +1436,7 @@ def plot_performance_comparison(results_dict, output_dir, x_axis, place_legend_o
     plot_helper(plot_dict, methods, plot_file, min_yrange=0.1, place_legend_outside=place_legend_outside,
                 hide_legend=hide_legend, log_scale=log_scale, hide_errorbar=hide_errorbar, x_axis=x_axis)
 
+    pdb.set_trace()
     # Partial AUC below different max-FPR values
     for j, f in enumerate(FPR_MAX_PAUC):
         plot_dict = dict()
@@ -1349,7 +1447,7 @@ def plot_performance_comparison(results_dict, output_dir, x_axis, place_legend_o
             d = results_dict[m]
             y_med = np.array([v[j] for v in d['pauc']['median']])
             y_low = np.array([v[j] for v in d['pauc']['CI_lower']])
-            y_up = np.array([v[j] for v in d['pauc']['CI_upper']])
+            y_up  = np.array([v[j] for v in d['pauc']['CI_upper']])
             plot_dict[m] = {
                 'x_vals': s * d[x_axis],
                 'y_vals': y_med,
@@ -1366,6 +1464,7 @@ def plot_performance_comparison(results_dict, output_dir, x_axis, place_legend_o
         plot_helper(plot_dict, methods, plot_file, min_yrange=0.1, place_legend_outside=place_legend_outside,
                     hide_legend=hide_legend, log_scale=log_scale, hide_errorbar=hide_errorbar, x_axis=x_axis)
 
+    pdb.set_trace()
     # TPR for different target FPR values
     for j, f in enumerate(FPR_THRESH):
         plot_dict = dict()

@@ -631,14 +631,11 @@ def main():
 
         scores_folds.append(scores_adv)
         labels_folds.append(labels_detec)
-        save_detector_checkpoint(scores_folds, labels_folds, models_folds, output_dir, method_name,
-                                 args.save_detec_model)
+        save_detector_checkpoint(scores_folds, labels_folds, models_folds, output_dir, method_name, args.save_detec_model)
 
     print("\nCalculating performance metrics for different proportion of attack samples:")
     fname = os.path.join(output_dir, 'detection_metrics_{}.pkl'.format(method_name))
-    results_dict = metrics_varying_positive_class_proportion(
-        scores_folds, labels_folds, output_file=fname, max_pos_proportion=args.max_attack_prop, log_scale=False
-    )
+    results_dict = metrics_varying_positive_class_proportion( scores_folds, labels_folds, output_file=fname, max_pos_proportion=args.max_attack_prop, log_scale=False )
     print("Performance metrics saved to the file: {}".format(fname))
     tf = time.time()
     print("Total time taken: {:.4f} minutes".format((tf - ti) / 60.))

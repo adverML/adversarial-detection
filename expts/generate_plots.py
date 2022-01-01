@@ -1,5 +1,6 @@
 # Generate plots of the performance metrics from the metrics pickle files
 import os
+import pdb
 import pickle
 import argparse
 from helpers.utils import plot_performance_comparison
@@ -49,6 +50,8 @@ def main():
         plo = False
     else:
         plo = True
+
+    pdb.set_trace()
 
     if results:
         plot_performance_comparison(results, plot_dir, args.x_axis, place_legend_outside=plo,

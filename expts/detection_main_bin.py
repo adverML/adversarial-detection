@@ -4,7 +4,7 @@ Main script for running the adversarial and OOD detection experiments.
 from __future__ import absolute_import, division, print_function
 import sys
 import argparse
-import os
+import os, pdb
 import time
 import numpy as np
 import torch
@@ -143,8 +143,6 @@ def main():
     parser.add_argument('--seed', '-s', type=int, default=SEED_DEFAULT, help='seed for random number generation')
     args = parser.parse_args()
 
-    print("args", args)
-
     if args.use_top_ranked and args.use_deep_layers:
         raise ValueError("Cannot provide both command line options '--use-top-ranked' and '--use-deep-layers'. "
                          "Specify only one of them.")
@@ -169,13 +167,8 @@ def main():
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
 
-    print("output_dir", output_dir)
-
     # Method name for results and plots
     method_name = METHOD_NAME_MAP[args.detection_method]
-
-
-    print("method_name:", method_name)
 
     # Dimensionality reduction to the layer embeddings is applied only for methods in certain configurations
     apply_dim_reduc = False
@@ -321,8 +314,7 @@ def main():
 
     # Initialization
     if args.resume_from_ckpt:
-        scores_folds, labels_folds, models_folds, init_fold = load_detector_checkpoint(output_dir, method_name,
-                                                                                       args.save_detec_model)
+        scores_folds, labels_folds, models_folds, init_fold = load_detector_checkpoint(output_dir, method_name, args.save_detec_model)
         print("Loading saved results from a previous run. Completed {:d} fold(s). Resuming from fold {:d}.".
               format(init_fold, init_fold + 1))
     else:
@@ -332,6 +324,8 @@ def main():
         init_fold = 0
 
     ti = time.time()
+
+
     # Cross-validation
     for i in range(init_fold, args.num_folds):
         print("\nProcessing cross-validation fold {:d}:".format(i + 1))
@@ -341,21 +335,18 @@ def main():
         # numpy_save_path = numpy_save_path.replace('varun', 'jayaram', 1)
         data_tr, labels_tr, data_te, labels_te = load_numpy_data(numpy_save_path)
         num_clean_tr = labels_tr.shape[0]
+        NR_TEST_SAMPLES = 5000
+        labels_te = labels_te[:NR_TEST_SAMPLES]
         num_clean_te = labels_te.shape[0]
-
-        print(labels_tr)
-
         # Data loader for the train fold
-        train_fold_loader = convert_to_loader(data_tr, labels_tr, dtype_x=torch.float, batch_size=args.batch_size,
-                                              device=device)
+        print("labels_tr: ", len(labels_tr) ) # 5000
+        train_fold_loader = convert_to_loader(data_tr, labels_tr, dtype_x=torch.float, batch_size=args.batch_size, device=device)
         # Data loader for the test fold
-        test_fold_loader = convert_to_loader(data_te, labels_te, dtype_x=torch.float, batch_size=args.batch_size,
-                                             device=device)
+        print("labels_te: ", len(labels_te) ) # 5000
+        test_fold_loader = convert_to_loader(data_te[:NR_TEST_SAMPLES], labels_te[:NR_TEST_SAMPLES], dtype_x=torch.float, batch_size=args.batch_size, device=device)
 
         # Get the range of values in the data array
         bounds = get_data_bounds(np.concatenate([data_tr, data_te], axis=0))
-
-        print("bounds: ", bounds)
 
         print("\nCalculating the layer embeddings and DNN predictions for the clean train data split:")
         layer_embeddings_tr, labels_pred_tr = helper_layer_embeddings(
@@ -376,19 +367,16 @@ def main():
         # Temporary hack to use backup data directory
         # numpy_save_path = numpy_save_path.replace('varun', 'jayaram', 1)
         data_tr_noisy, data_te_noisy = load_noisy_data(numpy_save_path)
+        data_te_noisy = data_te_noisy[:NR_TEST_SAMPLES]
         # Noisy data have the same labels as the clean data
         labels_tr_noisy = labels_tr
         labels_te_noisy = labels_te
         # Check the number of noisy samples
-        assert data_tr_noisy.shape[0] == num_clean_tr, ("Number of noisy samples from the train fold is different "
-                                                        "from expected")
-        assert data_te_noisy.shape[0] == num_clean_te, ("Number of noisy samples from the test fold is different "
-                                                        "from expected")
+        assert data_tr_noisy.shape[0] == num_clean_tr, ("Number of noisy samples from the train fold is different from expected")
+        assert data_te_noisy.shape[0] == num_clean_te, ("Number of noisy samples from the test fold is different from expected")
         # Data loader for the noisy train and test fold data
-        noisy_train_fold_loader = convert_to_loader(data_tr_noisy, labels_tr_noisy, dtype_x=torch.float,
-                                                    batch_size=args.batch_size, device=device)
-        noisy_test_fold_loader = convert_to_loader(data_te_noisy, labels_te_noisy, dtype_x=torch.float,
-                                                   batch_size=args.batch_size, device=device)
+        noisy_train_fold_loader = convert_to_loader(data_tr_noisy, labels_tr_noisy, dtype_x=torch.float, batch_size=args.batch_size, device=device)
+        noisy_test_fold_loader = convert_to_loader(data_te_noisy, labels_te_noisy, dtype_x=torch.float, batch_size=args.batch_size, device=device)
         print("\nCalculating the layer embeddings and DNN predictions for the noisy train data split:")
         layer_embeddings_tr_noisy, labels_pred_tr_noisy = helper_layer_embeddings(
             model, device, noisy_train_fold_loader, args.detection_method, labels_tr_noisy
@@ -416,11 +404,9 @@ def main():
               "samples = {:.4f}".format(num_clean_te, num_adv_te, (100. * num_adv_te) / (num_clean_te + num_adv_te)))
 
         # Adversarial data loader for the train fold
-        adv_train_fold_loader = convert_to_loader(data_tr_adv, labels_tr_adv, dtype_x=torch.float,
-                                                  batch_size=args.batch_size, device=device)
+        adv_train_fold_loader = convert_to_loader(data_tr_adv, labels_tr_adv, dtype_x=torch.float, batch_size=args.batch_size, device=device)
         # Adversarial data loader for the test fold
-        adv_test_fold_loader = convert_to_loader(data_te_adv, labels_te_adv, dtype_x=torch.float,
-                                                 batch_size=args.batch_size, device=device)
+        adv_test_fold_loader = convert_to_loader(data_te_adv, labels_te_adv, dtype_x=torch.float, batch_size=args.batch_size, device=device)
         if args.detection_method in ['lid', 'lid_class_cond']:
             # Needed only for the LID method
             print("\nCalculating the layer embeddings and DNN predictions for the adversarial train data split:")
@@ -479,8 +465,7 @@ def main():
                 det_model = DetectorLID(**kwargs)
 
             # Fit the detector on clean, noisy, and adversarial data from the training fold
-            _ = det_model.fit(layer_embeddings_tr, layer_embeddings_tr_adv,
-                              layer_embeddings_noisy=layer_embeddings_tr_noisy)
+            _ = det_model.fit(layer_embeddings_tr, layer_embeddings_tr_adv, layer_embeddings_noisy=layer_embeddings_tr_noisy)
             # Scores on clean data from the test fold
             scores_adv1 = det_model.score(layer_embeddings_te, cleanup=False)
 
@@ -550,8 +535,7 @@ def main():
             )
             # Fit the detector on clean data from the training fold
             if args.combine_classes and (args.test_statistic == 'multinomial'):
-                _ = det_model.fit(layer_embeddings_tr[st_ind:], labels_tr, labels_pred_tr,
-                                  combine_low_proba_classes=True)
+                _ = det_model.fit(layer_embeddings_tr[st_ind:], labels_tr, labels_pred_tr, combine_low_proba_classes=True)
             else:
                 _ = det_model.fit(layer_embeddings_tr[st_ind:], labels_tr, labels_pred_tr)
 
@@ -636,21 +620,16 @@ def main():
 
         # Sanity check
         if scores_adv.shape[0] != labels_detec.shape[0]:
-            raise ValueError(
-                "Detection scores and labels do not have the same length ({:d} != {:d}); method = {}, fold = {:d}".
-                    format(scores_adv.shape[0], labels_detec.shape[0], args.detection_method, i + 1)
-            )
+            raise ValueError("Detection scores and labels do not have the same length ({:d} != {:d}); method = {}, fold = {:d}".format(scores_adv.shape[0], labels_detec.shape[0], args.detection_method, i + 1) )
 
         scores_folds.append(scores_adv)
         labels_folds.append(labels_detec)
-        save_detector_checkpoint(scores_folds, labels_folds, models_folds, output_dir, method_name,
-                                 args.save_detec_model)
+        save_detector_checkpoint(scores_folds, labels_folds, models_folds, output_dir, method_name, args.save_detec_model)
 
     print("\nCalculating performance metrics for different proportion of attack samples:")
     fname = os.path.join(output_dir, 'detection_metrics_{}.pkl'.format(method_name))
-    results_dict = metrics_varying_positive_class_proportion(
-        scores_folds, labels_folds, output_file=fname, max_pos_proportion=args.max_attack_prop, log_scale=False
-    )
+    results_dict = metrics_varying_positive_class_proportion( scores_folds, labels_folds, output_file=fname, max_pos_proportion=args.max_attack_prop, log_scale=False )
+    pdb.set_trace()
     print("Performance metrics saved to the file: {}".format(fname))
     tf = time.time()
     print("Total time taken: {:.4f} minutes".format((tf - ti) / 60.))
